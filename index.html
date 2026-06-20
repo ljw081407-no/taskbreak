@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskBreak - 대학생 과제 분해 및 마감 관리</title>
-    <!-- Google Fonts: Inter & Outfit -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS v3 CDN -->
+
+    <!-- ✅ 유일한 외부 스크립트: Tailwind CSS v3 CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -20,338 +17,285 @@
                     },
                     colors: {
                         darkBg: '#090D16',
-                        glassBg: 'rgba(30, 41, 59, 0.45)',
-                        glassBorder: 'rgba(255, 255, 255, 0.08)',
-                        brandViolet: '#6366F1',
-                        brandBlue: '#3B82F6',
-                        brandRed: '#EF4444',
-                        brandGreen: '#10B981',
+                        glassBorder: 'rgba(255,255,255,0.08)',
                     }
                 }
             }
         }
     </script>
-    <!-- Custom Style Sheet (Merged from styles.css) -->
+
     <style>
-        /* TaskBreak Custom Styles & Animations */
+        /* ── Google Fonts (link 태그 없이 @import 로 로드) ── */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+        /* ── 전역 변수 ── */
         :root {
             --glass-bg: rgba(15, 23, 42, 0.55);
             --glass-border: rgba(255, 255, 255, 0.07);
-            --glass-glow: rgba(99, 102, 241, 0.15);
         }
+
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: #090D16;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* 글래스모피즘 카드 */
+        /* ── 글래스모피즘 카드 ── */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,.7);
         }
-
         .glass-card:hover {
-            border-color: rgba(99, 102, 241, 0.25);
-            box-shadow: 0 12px 35px -10px rgba(99, 102, 241, 0.1);
-            transition: all 0.3s ease;
+            border-color: rgba(99,102,241,.25);
+            box-shadow: 0 12px 35px -10px rgba(99,102,241,.12);
+            transition: all .3s ease;
         }
 
-        /* 폼 인풋 기본 디자인 */
+        /* ── 폼 인풋 ── */
         .form-input {
-            background-color: rgba(13, 20, 35, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(13,20,35,.75);
+            border: 1px solid rgba(255,255,255,.08);
+            color: #e2e8f0;
+            transition: all .2s cubic-bezier(.4,0,.2,1);
         }
-
         .form-input:focus {
-            background-color: rgba(13, 20, 35, 0.95);
-            border-color: #6366F1;
-            box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
+            outline: none;
+            background-color: rgba(13,20,35,.95);
+            border-color: #6366f1;
+            box-shadow: 0 0 12px rgba(99,102,241,.25);
         }
+        select.form-input option { background: #0f172a; }
 
-        /* 커스텀 슬림 스크롤바 */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
+        /* ── 커스텀 슬림 스크롤바 ── */
+        .custom-scrollbar::-webkit-scrollbar { width:6px; height:6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background:rgba(15,23,42,.3); border-radius:8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background:rgba(99,102,241,.25); border-radius:8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background:rgba(99,102,241,.55); }
 
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.3);
-            border-radius: 8px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(99, 102, 241, 0.25);
-            border-radius: 8px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(99, 102, 241, 0.55);
-        }
-
-        /* 마감 임박 D-Day 카드용 글로우 펄스 애니메이션 */
+        /* ── D-Day 카드 펄스 ── */
         @keyframes dday-pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-                border-color: rgba(239, 68, 68, 0.6);
-            }
-            70% {
-                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
-                border-color: rgba(239, 68, 68, 0.8);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-                border-color: rgba(239, 68, 68, 0.6);
-            }
+            0%   { box-shadow:0 0 0 0 rgba(239,68,68,.4);  border-color:rgba(239,68,68,.6); }
+            70%  { box-shadow:0 0 0 8px rgba(239,68,68,0); border-color:rgba(239,68,68,.8); }
+            100% { box-shadow:0 0 0 0 rgba(239,68,68,0);  border-color:rgba(239,68,68,.6); }
         }
-
         .urgent-card-dday {
-            animation: dday-pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(15, 23, 42, 0.8) 100%);
+            animation: dday-pulse 2s infinite cubic-bezier(.4,0,.6,1);
+            background: linear-gradient(135deg, rgba(239,68,68,.1) 0%, rgba(15,23,42,.8) 100%);
         }
-
         @keyframes dday-near-pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.25);
-                border-color: rgba(245, 158, 11, 0.5);
-            }
-            70% {
-                box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
-                border-color: rgba(245, 158, 11, 0.7);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
-                border-color: rgba(245, 158, 11, 0.5);
-            }
+            0%   { box-shadow:0 0 0 0 rgba(245,158,11,.25); border-color:rgba(245,158,11,.5); }
+            70%  { box-shadow:0 0 0 6px rgba(245,158,11,0); border-color:rgba(245,158,11,.7); }
+            100% { box-shadow:0 0 0 0 rgba(245,158,11,0);  border-color:rgba(245,158,11,.5); }
         }
-
         .urgent-card-near {
-            animation: dday-near-pulse 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
+            animation: dday-near-pulse 2.5s infinite cubic-bezier(.4,0,.6,1);
+            background: linear-gradient(135deg, rgba(245,158,11,.08) 0%, rgba(15,23,42,.8) 100%);
         }
 
-        /* 느린 배경 펄스 애니메이션 */
-        @keyframes pulse-slow {
-            0%, 100% {
-                opacity: 0.6;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.9;
-                transform: scale(1.15);
-            }
-        }
-
-        .animate-pulse-slow {
-            animation: pulse-slow 8s infinite ease-in-out;
-        }
-
-        /* 커스텀 체크박스 */
+        /* ── 커스텀 체크박스 ── */
         .custom-checkbox {
             appearance: none;
             -webkit-appearance: none;
             width: 1.25rem;
             height: 1.25rem;
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border: 1.5px solid rgba(255,255,255,.2);
             border-radius: 4px;
-            background-color: rgba(15, 23, 42, 0.6);
+            background-color: rgba(15,23,42,.6);
             display: inline-grid;
             place-content: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all .2s ease;
+            flex-shrink: 0;
         }
-
-        .custom-checkbox:hover {
-            border-color: #6366F1;
-            background-color: rgba(99, 102, 241, 0.15);
-        }
-
-        .custom-checkbox:checked {
-            background-color: #10B981;
-            border-color: #10B981;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-        }
-
+        .custom-checkbox:hover { border-color:#6366f1; background-color:rgba(99,102,241,.15); }
+        .custom-checkbox:checked { background-color:#10b981; border-color:#10b981; box-shadow:0 0 8px rgba(16,185,129,.4); }
         .custom-checkbox::before {
-            content: "";
-            width: 0.65em;
-            height: 0.65em;
-            transform: scale(0);
-            transition: 120ms transform ease-in-out;
-            box-shadow: inset 1em 1em white;
-            transform-origin: bottom left;
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            content:"";
+            width:.65em; height:.65em;
+            transform:scale(0);
+            transition:120ms transform ease-in-out;
+            box-shadow:inset 1em 1em white;
+            transform-origin:bottom left;
+            clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%);
+        }
+        .custom-checkbox:checked::before { transform:scale(1); }
+
+        /* ── 완료 텍스트 ── */
+        .todo-checked-text { text-decoration:line-through; color:#64748b; }
+
+        /* ── 모달 애니메이션 ── */
+        .modal-active  { display:flex !important; }
+        .modal-animate-in { opacity:1 !important; }
+        .modal-animate-in > div { transform:scale(1) !important; }
+
+        /* ── 인라인 SVG 아이콘 공통 ── */
+        .icon { display:inline-block; vertical-align:middle; }
+
+        /* ── 배경 광채 블롭 ── */
+        .blob-1 {
+            position:fixed; top:10%; left:15%; width:500px; height:500px;
+            border-radius:50%; background:rgba(99,102,241,.07);
+            filter:blur(120px); pointer-events:none; z-index:0;
+            animation: blobmove 12s ease-in-out infinite alternate;
+        }
+        .blob-2 {
+            position:fixed; bottom:10%; right:10%; width:420px; height:420px;
+            border-radius:50%; background:rgba(168,85,247,.06);
+            filter:blur(100px); pointer-events:none; z-index:0;
+            animation: blobmove 16s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes blobmove {
+            from { transform:translate(0,0) scale(1); }
+            to   { transform:translate(30px,20px) scale(1.08); }
         }
 
-        .custom-checkbox:checked::before {
-            transform: scale(1);
-        }
-
-        /* 완료된 텍스트 취소선 스타일 */
-        .todo-checked-text {
-            text-decoration: line-through;
-            color: #64748B;
-            transition: all 0.2s ease;
-        }
-
-        /* 모달 애니메이션 클래스 */
-        .modal-active {
-            display: flex !important;
-        }
-
-        .modal-animate-in {
-            opacity: 1 !important;
-        }
-
-        .modal-animate-in > div {
-            transform: scale(1) !important;
-        }
+        /* ── 반응형 레이아웃 보조 ── */
+        #app-container { position:relative; z-index:1; }
     </style>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-darkBg text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+<body class="text-slate-100 selection:bg-indigo-500 selection:text-white">
 
-    <!-- APP CONTAINER (대시보드 바로 렌더링) -->
-    <div id="app-container" class="min-h-screen pb-16">
-        <!-- 네비게이션 헤더 -->
-        <header class="sticky top-0 z-40 bg-darkBg/80 backdrop-blur-md border-b border-slate-800/80">
+    <!-- 배경 광채 블롭 -->
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!--  APP CONTAINER — 접속 즉시 대시보드     -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="app-container" class="min-h-screen pb-20">
+
+        <!-- ── 헤더 ── -->
+        <header class="sticky top-0 z-40 border-b border-slate-800/80" style="background:rgba(9,13,22,.85);backdrop-filter:blur(14px);">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <!-- 로고 -->
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600/10 border border-indigo-500/35">
-                        <i data-lucide="split" class="w-5 h-5 text-indigo-400"></i>
+                <div class="flex items-center gap-2.5">
+                    <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-indigo-600/15 border border-indigo-500/30">
+                        <!-- split icon -->
+                        <svg class="w-5 h-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22V12"/><path d="m21 3-9 9"/><path d="M3 3l9 9"/></svg>
                     </div>
-                    <span class="text-xl font-extrabold font-outfit tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">TaskBreak</span>
+                    <span class="text-xl font-extrabold tracking-tight" style="font-family:'Outfit',sans-serif;background:linear-gradient(to right,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">TaskBreak</span>
                 </div>
-
-                <!-- 우측 배지 (비로그인 서비스 강조) -->
-                <div class="flex items-center gap-3">
-                    <span class="text-xs font-semibold px-3 py-1.5 bg-indigo-500/10 text-indigo-300 rounded-full border border-indigo-500/15 flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-450 animate-pulse"></span>
-                        대학생 전용 과제 관리자
-                    </span>
-                </div>
+                <!-- 우측 배지 -->
+                <span class="hidden sm:flex text-xs font-semibold px-3 py-1.5 bg-indigo-500/10 text-indigo-300 rounded-full border border-indigo-500/20 items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+                    대학생 전용 과제 관리자
+                </span>
             </div>
         </header>
 
-        <!-- 메인 콘텐츠 영역 -->
+        <!-- ── 메인 ── -->
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-            <!-- 상단 웰컴 및 과제 통계 요약 -->
+
+            <!-- 웰컴 + 추가 버튼 -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight" id="welcome-message">안녕하세요, 학우님! 👋</h2>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight" id="welcome-message">안녕하세요, 학우님! 👋</h1>
                     <p class="text-slate-400 text-sm mt-1">오늘도 마감 시간을 쪼개어 계획대로 과제를 클리어해 봅시다.</p>
                 </div>
-                <button id="open-add-modal-btn" class="self-start md:self-auto py-2.5 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/35 hover:-translate-y-0.5 transition-all duration-200 text-sm flex items-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i> 새 과제 추가
+                <button id="open-add-modal-btn"
+                    class="self-start md:self-auto flex items-center gap-2 py-2.5 px-5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/25 hover:-translate-y-0.5 transition-all duration-200 text-sm">
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    새 과제 추가
                 </button>
             </div>
 
-            <!-- 대시보드 통계 그리드 -->
+            <!-- 통계 카드 4개 -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="glass-card p-5 rounded-xl border border-glassBorder flex items-center gap-4">
-                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg"><i data-lucide="book-open" class="w-6 h-6"></i></div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-medium">전체 과제</div>
-                        <div class="text-2xl font-bold font-outfit mt-0.5" id="stat-total">0</div>
+                <div class="glass-card p-5 rounded-xl flex items-center gap-4">
+                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                     </div>
+                    <div><div class="text-xs text-slate-400 font-medium">전체 과제</div><div class="text-2xl font-bold mt-0.5" style="font-family:'Outfit',sans-serif;" id="stat-total">0</div></div>
                 </div>
-                <div class="glass-card p-5 rounded-xl border border-glassBorder flex items-center gap-4">
-                    <div class="p-3 bg-yellow-500/10 text-yellow-400 rounded-lg"><i data-lucide="clock" class="w-6 h-6"></i></div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-medium">진행 중</div>
-                        <div class="text-2xl font-bold font-outfit mt-0.5" id="stat-progress">0</div>
+                <div class="glass-card p-5 rounded-xl flex items-center gap-4">
+                    <div class="p-3 bg-yellow-500/10 text-yellow-400 rounded-lg">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </div>
+                    <div><div class="text-xs text-slate-400 font-medium">진행 중</div><div class="text-2xl font-bold mt-0.5" style="font-family:'Outfit',sans-serif;" id="stat-progress">0</div></div>
                 </div>
-                <div class="glass-card p-5 rounded-xl border border-glassBorder flex items-center gap-4">
-                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg"><i data-lucide="check-circle2" class="w-6 h-6"></i></div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-medium">완료 과제</div>
-                        <div class="text-2xl font-bold font-outfit mt-0.5" id="stat-completed">0</div>
+                <div class="glass-card p-5 rounded-xl flex items-center gap-4">
+                    <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     </div>
+                    <div><div class="text-xs text-slate-400 font-medium">완료 과제</div><div class="text-2xl font-bold mt-0.5" style="font-family:'Outfit',sans-serif;" id="stat-completed">0</div></div>
                 </div>
-                <div class="glass-card p-5 rounded-xl border border-glassBorder flex items-center gap-4">
-                    <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-lg"><i data-lucide="calendar" class="w-6 h-6"></i></div>
-                    <div>
-                        <div class="text-xs text-slate-400 font-medium">평균 진행률</div>
-                        <div class="text-2xl font-bold font-outfit mt-0.5" id="stat-avg-progress">0%</div>
+                <div class="glass-card p-5 rounded-xl flex items-center gap-4">
+                    <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-lg">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     </div>
+                    <div><div class="text-xs text-slate-400 font-medium">평균 진행률</div><div class="text-2xl font-bold mt-0.5" style="font-family:'Outfit',sans-serif;" id="stat-avg-progress">0%</div></div>
                 </div>
             </div>
 
-            <!-- 메인 대시보드 레이아웃 -->
+            <!-- 메인 그리드: 오늘 할 일 | 마감 임박 + 전체 목록 -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- 왼쪽 섹션: 오늘 해야 할 일 (5/12) -->
-                <section class="lg:col-span-5 space-y-6">
-                    <div class="glass-card p-6 rounded-2xl border border-glassBorder flex flex-col h-[520px] relative overflow-hidden">
+
+                <!-- ── 왼쪽: 오늘 해야 할 작업 ── -->
+                <section class="lg:col-span-5">
+                    <div class="glass-card p-6 rounded-2xl flex flex-col" style="height:520px;">
                         <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
                             <div class="flex items-center gap-2">
-                                <i data-lucide="check-square" class="w-5 h-5 text-indigo-400"></i>
-                                <h3 class="text-lg font-bold">오늘 해야 할 작업</h3>
+                                <svg class="w-5 h-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                <h2 class="text-lg font-bold">오늘 해야 할 작업</h2>
                             </div>
-                            <span class="text-xs bg-indigo-500/15 text-indigo-300 font-semibold px-2 py-0.5 rounded-full" id="today-tasks-count">0개 남음</span>
+                            <span id="today-tasks-count" class="text-xs bg-indigo-500/15 text-indigo-300 font-semibold px-2 py-0.5 rounded-full">0개 남음</span>
                         </div>
-
-                        <!-- 작업 체크리스트 스크롤 영역 -->
-                        <div class="flex-1 overflow-y-auto space-y-3 pr-1" id="today-tasks-list">
-                            <!-- JS를 통해 동적 생성 -->
-                            <div class="text-center py-12 text-slate-500 text-sm">
-                                <i data-lucide="clipboard-check" class="w-8 h-8 mx-auto mb-2 text-slate-650 opacity-40"></i>
+                        <div id="today-tasks-list" class="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
+                            <div class="flex flex-col items-center justify-center h-full py-8 text-slate-500 text-sm">
+                                <div class="p-4 bg-emerald-500/10 rounded-full text-emerald-400 mb-3 border border-emerald-500/15">
+                                    <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                </div>
                                 오늘 예정된 세부 작업이 없습니다.
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- 오른쪽 섹션: 마감 임박 및 전체 목록 (7/12) -->
+                <!-- ── 오른쪽: 마감 임박 + 전체 목록 ── -->
                 <section class="lg:col-span-7 space-y-8">
-                    <!-- 1. 마감 임박 과제 (D-3 이내) -->
+
+                    <!-- 마감 임박 -->
                     <div>
                         <div class="flex items-center gap-2 mb-4">
-                            <i data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>
-                            <h3 class="text-lg font-bold text-slate-100">마감 임박 과제</h3>
+                            <svg class="w-5 h-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <h2 class="text-lg font-bold text-slate-100">마감 임박 과제</h2>
                             <span class="text-xs text-slate-400">(D-3 이내)</span>
                         </div>
-                        <div class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar" id="urgent-assignments-list">
-                            <!-- JS를 통해 동적 생성 -->
+                        <div id="urgent-assignments-list" class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                             <div class="text-slate-500 text-sm py-4">마감 임박한 과제가 없습니다. 여유롭네요! 😊</div>
                         </div>
                     </div>
 
-                    <!-- 2. 전체 과제 목록 -->
+                    <!-- 전체 과제 목록 -->
                     <div>
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                             <div class="flex items-center gap-2">
-                                <i data-lucide="layers" class="w-5 h-5 text-slate-400"></i>
-                                <h3 class="text-lg font-bold text-slate-100">전체 과제 목록</h3>
+                                <svg class="w-5 h-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                                <h2 class="text-lg font-bold text-slate-100">전체 과제 목록</h2>
                             </div>
-                            
-                            <!-- 필터 및 정렬 컨트롤러 -->
                             <div class="flex flex-wrap items-center gap-2 text-xs">
-                                <select id="filter-status" class="bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5 text-slate-350 focus:outline-none focus:border-indigo-500">
+                                <select id="filter-status" class="form-input bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
                                     <option value="all">모든 과제</option>
                                     <option value="in-progress">진행 중인 과제</option>
                                     <option value="completed">완료된 과제</option>
                                 </select>
-                                <select id="sort-by" class="bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5 text-slate-350 focus:outline-none focus:border-indigo-500">
+                                <select id="sort-by" class="form-input bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
                                     <option value="deadline">마감일 빠른 순</option>
                                     <option value="priority">중요도 높은 순</option>
                                     <option value="title">제목 순</option>
                                 </select>
                             </div>
                         </div>
-
-                        <!-- 과제 목록 그리드 -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="assignments-grid">
-                            <!-- JS를 통해 동적 생성 -->
-                            <div class="col-span-full text-center py-16 glass-card rounded-xl border border-glassBorder text-slate-500">
-                                <i data-lucide="folder-open" class="w-10 h-10 mx-auto mb-3 text-slate-600 opacity-40"></i>
-                                등록된 과제가 없습니다. 우측 상단의 '새 과제 추가'를 이용해 첫 과제를 만들어 보세요!
+                        <div id="assignments-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="col-span-full text-center py-16 glass-card rounded-xl text-slate-500">
+                                <svg class="w-10 h-10 mx-auto mb-3 opacity-30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                                등록된 과제가 없습니다. '새 과제 추가' 버튼을 눌러 시작하세요!
                             </div>
                         </div>
                     </div>
@@ -360,31 +304,30 @@
         </main>
     </div>
 
-    <!-- 3. MODAL: 과제 추가/수정 모달 -->
-    <div id="assignment-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-        <div class="glass-card max-w-lg w-full rounded-2xl border border-glassBorder shadow-2xl max-h-[90vh] flex flex-col transform scale-95 transition-transform duration-300">
-            <!-- 모달 헤더 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  MODAL 1: 과제 추가 / 수정                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="assignment-modal" class="fixed inset-0 z-50 items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" style="background:rgba(0,0,0,.72);backdrop-filter:blur(6px);">
+        <div class="glass-card max-w-lg w-full rounded-2xl shadow-2xl max-h-[90vh] flex flex-col transform scale-95 transition-transform duration-300">
             <div class="p-5 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="text-xl font-bold flex items-center gap-2" id="modal-title">
-                    <i data-lucide="clipboard-list" class="w-5 h-5 text-indigo-400"></i> 새 과제 추가
+                <h3 id="modal-title" class="text-xl font-bold flex items-center gap-2 text-slate-100">
+                    <svg class="w-5 h-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    새 과제 추가
                 </h3>
-                <button class="close-modal-btn p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-all focus:outline-none">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+                <button class="close-modal-btn p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
-
-            <!-- 모달 본문 (스크롤) -->
             <form id="assignment-form" class="p-6 overflow-y-auto space-y-4 flex-1 custom-scrollbar text-sm">
                 <input type="hidden" id="assignment-id">
-                
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="form-subject" class="block text-slate-400 font-semibold mb-1">과목명 *</label>
-                        <input type="text" id="form-subject" required class="form-input w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="예: 데이터 구조">
+                        <input type="text" id="form-subject" required class="form-input w-full rounded-lg px-3 py-2" placeholder="예: 데이터 구조">
                     </div>
                     <div>
                         <label for="form-type" class="block text-slate-400 font-semibold mb-1">과제 유형 *</label>
-                        <select id="form-type" required class="form-input w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <select id="form-type" required class="form-input w-full rounded-lg px-3 py-2">
                             <option value="레포트">레포트</option>
                             <option value="발표">발표 (PPT)</option>
                             <option value="시험 공부">시험 공부</option>
@@ -393,920 +336,535 @@
                         </select>
                     </div>
                 </div>
-
                 <div>
                     <label for="form-title" class="block text-slate-400 font-semibold mb-1">과제 제목 *</label>
-                    <input type="text" id="form-title" required class="form-input w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="예: 미니 프로젝트 최종 결과물 제출">
+                    <input type="text" id="form-title" required class="form-input w-full rounded-lg px-3 py-2" placeholder="예: 미니 프로젝트 최종 결과물 제출">
                 </div>
-
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label for="form-deadline" class="block text-slate-400 font-semibold mb-1">마감일 *</label>
-                        <input type="date" id="form-deadline" required class="form-input w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <input type="date" id="form-deadline" required class="form-input w-full rounded-lg px-3 py-2">
                     </div>
                     <div>
-                        <label for="form-hours" class="block text-slate-400 font-semibold mb-1">예상 소요 시간 (시간) *</label>
-                        <input type="number" id="form-hours" required min="1" max="500" class="form-input w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="예: 8">
+                        <label for="form-hours" class="block text-slate-400 font-semibold mb-1">예상 시간 (h) *</label>
+                        <input type="number" id="form-hours" required min="1" max="500" class="form-input w-full rounded-lg px-3 py-2" placeholder="예: 8">
                     </div>
                     <div>
                         <label for="form-priority" class="block text-slate-400 font-semibold mb-1">중요도 *</label>
-                        <select id="form-priority" required class="form-input w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
-                            <option value="상">상 (우선 처리)</option>
-                            <option value="중">중 (일반 수준)</option>
-                            <option value="하">하 (여유로움)</option>
+                        <select id="form-priority" required class="form-input w-full rounded-lg px-3 py-2">
+                            <option value="상">상 (우선)</option>
+                            <option value="중">중 (일반)</option>
+                            <option value="하">하 (여유)</option>
                         </select>
                     </div>
                 </div>
-
                 <div>
                     <label for="form-description" class="block text-slate-400 font-semibold mb-1">과제 설명</label>
-                    <textarea id="form-description" rows="3" class="form-input w-full bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500" placeholder="과제 조건, 유의사항 등을 입력하세요..."></textarea>
+                    <textarea id="form-description" rows="3" class="form-input w-full rounded-lg px-3 py-2" placeholder="과제 조건, 유의사항 등을 입력하세요..."></textarea>
                 </div>
-
-                <!-- 모달 푸터 -->
                 <div class="pt-4 border-t border-slate-800 flex justify-end gap-3">
-                    <button type="button" class="close-modal-btn px-4 py-2 bg-slate-850 hover:bg-slate-800 text-slate-300 font-medium rounded-lg transition-all focus:outline-none">
-                        취소
-                    </button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-750 text-white font-semibold rounded-lg shadow-lg hover:shadow-indigo-500/20 transition-all focus:outline-none flex items-center gap-1.5">
-                        <i data-lucide="check" class="w-4 h-4"></i> 저장 및 자동 분해
+                    <button type="button" class="close-modal-btn px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-lg transition-all">취소</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg shadow-lg transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        저장 및 자동 분해
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-
-    <!-- 4. MODAL: 과제 상세 & 체크리스트 모달 -->
-    <div id="details-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-        <div class="glass-card max-w-2xl w-full rounded-2xl border border-glassBorder shadow-2xl max-h-[90vh] flex flex-col transform scale-95 transition-transform duration-300">
-            <!-- 모달 헤더 -->
-            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  MODAL 2: 과제 상세 & 체크리스트           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="details-modal" class="fixed inset-0 z-50 items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" style="background:rgba(0,0,0,.72);backdrop-filter:blur(6px);">
+        <div class="glass-card max-w-2xl w-full rounded-2xl shadow-2xl max-h-[90vh] flex flex-col transform scale-95 transition-transform duration-300">
+            <div class="p-5 border-b border-slate-800 flex items-start justify-between gap-3">
                 <div>
-                    <span id="detail-subject" class="text-xs font-semibold px-2 py-0.5 bg-indigo-500/15 text-indigo-300 rounded-md border border-indigo-500/20">데이터 구조</span>
-                    <h3 id="detail-title" class="text-lg sm:text-xl font-bold mt-1.5 text-slate-100">미니 프로젝트 최종 결과물 제출</h3>
+                    <span id="detail-subject" class="text-xs font-semibold px-2 py-0.5 bg-indigo-500/15 text-indigo-300 rounded-md border border-indigo-500/20"></span>
+                    <h3 id="detail-title" class="text-lg sm:text-xl font-bold mt-1.5 text-slate-100"></h3>
                 </div>
-                <button class="close-details-btn p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-all focus:outline-none">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+                <button class="close-details-btn p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all flex-shrink-0">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
-
-            <!-- 모달 본문 (스크롤) -->
             <div class="p-6 overflow-y-auto flex-1 custom-scrollbar text-sm space-y-6">
-                <!-- 과제 요약 정보 -->
+                <!-- 요약 정보 -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-slate-900/60 rounded-xl border border-slate-800/80">
-                    <div>
-                        <div class="text-xs text-slate-450">마감일</div>
-                        <div class="font-bold text-slate-200 mt-0.5" id="detail-deadline">2026-06-25</div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-450">남은 일수</div>
-                        <div class="font-bold mt-0.5" id="detail-dday">-</div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-450">과제 유형 / 중요도</div>
-                        <div class="font-bold text-slate-200 mt-0.5 flex items-center gap-1.5">
-                            <span id="detail-type">-</span> / <span id="detail-priority">-</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-slate-450">예상 시간</div>
-                        <div class="font-bold text-slate-200 mt-0.5" id="detail-hours">8시간</div>
-                    </div>
+                    <div><div class="text-xs text-slate-400">마감일</div><div id="detail-deadline" class="font-bold text-slate-200 mt-0.5"></div></div>
+                    <div><div class="text-xs text-slate-400">남은 일수</div><div id="detail-dday" class="font-bold mt-0.5"></div></div>
+                    <div><div class="text-xs text-slate-400">유형 / 중요도</div><div class="font-bold text-slate-200 mt-0.5"><span id="detail-type"></span> / <span id="detail-priority"></span></div></div>
+                    <div><div class="text-xs text-slate-400">예상 시간</div><div id="detail-hours" class="font-bold text-slate-200 mt-0.5"></div></div>
                 </div>
-
-                <!-- 상세 설명 -->
+                <!-- 설명 -->
                 <div>
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">과제 상세 설명</h4>
-                    <div class="p-3.5 bg-slate-950/40 border border-slate-900 rounded-lg text-slate-300 min-h-[50px] whitespace-pre-wrap leading-relaxed" id="detail-description">
-                        과제 설명이 없습니다.
-                    </div>
+                    <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">과제 설명</h4>
+                    <div id="detail-description" class="p-3.5 bg-slate-950/40 border border-slate-900 rounded-lg text-slate-300 min-h-[50px] whitespace-pre-wrap leading-relaxed"></div>
                 </div>
-
                 <!-- 진행률 바 -->
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400">태스크 분해 진행률</h4>
-                        <span class="text-sm font-bold font-outfit text-indigo-400" id="detail-progress-percent">0%</span>
+                        <span id="detail-progress-percent" class="text-sm font-bold text-indigo-400" style="font-family:'Outfit',sans-serif;">0%</span>
                     </div>
                     <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-800">
-                        <div id="detail-progress-bar" class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full w-[0%] transition-all duration-350"></div>
+                        <div id="detail-progress-bar" class="h-full transition-all duration-300" style="width:0%;background:linear-gradient(to right,#6366f1,#10b981);"></div>
                     </div>
                 </div>
-
-                <!-- 분해된 세부 작업 체크리스트 -->
+                <!-- 체크리스트 -->
                 <div>
-                    <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                        <i data-lucide="list-checks" class="w-4 h-4 text-indigo-400"></i> 자동 분해된 세부 작업
-                    </h4>
-                    <div class="space-y-2" id="detail-steps-list">
-                        <!-- JS로 동적 생성 -->
-                    </div>
+                    <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">자동 분해된 세부 작업</h4>
+                    <div id="detail-steps-list" class="space-y-2"></div>
                 </div>
             </div>
-
-            <!-- 모달 푸터 (수정, 삭제, 닫기) -->
             <div class="p-5 border-t border-slate-800 bg-slate-900/30 flex justify-between gap-3 text-xs sm:text-sm">
                 <div class="flex gap-2">
-                    <button id="delete-assignment-btn" class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-semibold rounded-lg transition-all focus:outline-none flex items-center gap-1">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i> 삭제
+                    <button id="delete-assignment-btn" class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-semibold rounded-lg transition-all flex items-center gap-1">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                        삭제
                     </button>
-                    <button id="edit-assignment-btn" class="px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 font-semibold rounded-lg transition-all focus:outline-none flex items-center gap-1">
-                        <i data-lucide="edit" class="w-4 h-4"></i> 수정
+                    <button id="edit-assignment-btn" class="px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 font-semibold rounded-lg transition-all flex items-center gap-1">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        수정
                     </button>
                 </div>
-                <button class="close-details-btn px-5 py-2 bg-slate-800 hover:bg-slate-750 text-slate-200 font-semibold rounded-lg transition-all focus:outline-none">
-                    닫기
-                </button>
+                <button class="close-details-btn px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-lg transition-all">닫기</button>
             </div>
         </div>
     </div>
 
-    <!-- Application Script Logic (Merged from app.js) -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  APPLICATION LOGIC (모든 JS 인라인)        -->
+    <!-- ═══════════════════════════════════════════ -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // -----------------------------------------
-            // 1. STATE & LOCALSTORAGE INITIALIZATION
-            // -----------------------------------------
-            let assignments = JSON.parse(localStorage.getItem('tb_assignments')) || [];
+    document.addEventListener('DOMContentLoaded', () => {
 
-            // DOM Elements - Top Header & Welcome
-            const welcomeMessage = document.getElementById('welcome-message');
+        // ── 1. 상태 & LocalStorage ──────────────────
+        let assignments = JSON.parse(localStorage.getItem('tb_assignments')) || [];
 
-            // DOM Elements - Stats
-            const statTotal = document.getElementById('stat-total');
-            const statProgress = document.getElementById('stat-progress');
-            const statCompleted = document.getElementById('stat-completed');
-            const statAvgProgress = document.getElementById('stat-avg-progress');
+        const $ = id => document.getElementById(id);
+        const welcomeMessage       = $('welcome-message');
+        const statTotal            = $('stat-total');
+        const statProgress         = $('stat-progress');
+        const statCompleted        = $('stat-completed');
+        const statAvgProgress      = $('stat-avg-progress');
+        const todayTasksList       = $('today-tasks-list');
+        const todayTasksCount      = $('today-tasks-count');
+        const urgentList           = $('urgent-assignments-list');
+        const assignmentsGrid      = $('assignments-grid');
+        const filterStatus         = $('filter-status');
+        const sortBy               = $('sort-by');
+        const assignmentModal      = $('assignment-modal');
+        const assignmentForm       = $('assignment-form');
+        const modalTitle           = $('modal-title');
+        const openAddBtn           = $('open-add-modal-btn');
+        const formId               = $('assignment-id');
+        const formSubject          = $('form-subject');
+        const formType             = $('form-type');
+        const formTitle            = $('form-title');
+        const formDeadline         = $('form-deadline');
+        const formHours            = $('form-hours');
+        const formPriority         = $('form-priority');
+        const formDescription      = $('form-description');
+        const detailsModal         = $('details-modal');
+        const detailSubject        = $('detail-subject');
+        const detailTitle          = $('detail-title');
+        const detailDeadline       = $('detail-deadline');
+        const detailDday           = $('detail-dday');
+        const detailType           = $('detail-type');
+        const detailPriority       = $('detail-priority');
+        const detailHours          = $('detail-hours');
+        const detailDescription    = $('detail-description');
+        const detailProgressPct    = $('detail-progress-percent');
+        const detailProgressBar    = $('detail-progress-bar');
+        const detailStepsList      = $('detail-steps-list');
+        const editBtn              = $('edit-assignment-btn');
+        const deleteBtn            = $('delete-assignment-btn');
 
-            // DOM Elements - Lists & Filters
-            const todayTasksList = document.getElementById('today-tasks-list');
-            const todayTasksCount = document.getElementById('today-tasks-count');
-            const urgentAssignmentsList = document.getElementById('urgent-assignments-list');
-            const assignmentsGrid = document.getElementById('assignments-grid');
-            const filterStatus = document.getElementById('filter-status');
-            const sortBy = document.getElementById('sort-by');
+        let activeId = null;
 
-            // DOM Elements - Assignment Add/Edit Modal
-            const assignmentModal = document.getElementById('assignment-modal');
-            const assignmentForm = document.getElementById('assignment-form');
-            const modalTitle = document.getElementById('modal-title');
-            const openAddModalBtn = document.getElementById('open-add-modal-btn');
-            const closeModalBtns = document.querySelectorAll('.close-modal-btn');
-            const formId = document.getElementById('assignment-id');
-            const formSubject = document.getElementById('form-subject');
-            const formType = document.getElementById('form-type');
-            const formTitle = document.getElementById('form-title');
-            const formDeadline = document.getElementById('form-deadline');
-            const formHours = document.getElementById('form-hours');
-            const formPriority = document.getElementById('form-priority');
-            const formDescription = document.getElementById('form-description');
+        // ── 2. 초기화 ─────────────────────────────
+        function init() {
+            const h = new Date().getHours();
+            const gr = h < 5 ? '오늘도 수고 많으십니다' : h < 12 ? '좋은 아침입니다' : h < 18 ? '활기찬 오후입니다' : '오늘도 수고 많으십니다';
+            welcomeMessage.textContent = `${gr}, 학우님! 👋`;
+            render();
+        }
 
-            // DOM Elements - Assignment Details Modal
-            const detailsModal = document.getElementById('details-modal');
-            const closeDetailsBtns = document.querySelectorAll('.close-details-btn');
-            const detailSubject = document.getElementById('detail-subject');
-            const detailTitle = document.getElementById('detail-title');
-            const detailDeadline = document.getElementById('detail-deadline');
-            const detailDday = document.getElementById('detail-dday');
-            const detailType = document.getElementById('detail-type');
-            const detailPriority = document.getElementById('detail-priority');
-            const detailHours = document.getElementById('detail-hours');
-            const detailDescription = document.getElementById('detail-description');
-            const detailProgressPercent = document.getElementById('detail-progress-percent');
-            const detailProgressBar = document.getElementById('detail-progress-bar');
-            const detailStepsList = document.getElementById('detail-steps-list');
-            const editAssignmentBtn = document.getElementById('edit-assignment-btn');
-            const deleteAssignmentBtn = document.getElementById('delete-assignment-btn');
+        // ── 3. 날짜 유틸 ──────────────────────────
+        function daysLeft(d) {
+            const t = new Date(); t.setHours(0,0,0,0);
+            const dl = new Date(d); dl.setHours(0,0,0,0);
+            return Math.ceil((dl - t) / 86400000);
+        }
+        function ddayLabel(d) {
+            const n = daysLeft(d);
+            return n === 0 ? 'D-Day' : n > 0 ? `D-${n}` : `D+${Math.abs(n)}`;
+        }
+        function fmtDate(d) {
+            const days = ['일','월','화','수','목','금','토'];
+            const dt = new Date(d);
+            if (isNaN(dt)) return d;
+            return `${dt.getMonth()+1}/${dt.getDate()}(${days[dt.getDay()]})`;
+        }
+        function todayStr() { return new Date().toISOString().split('T')[0]; }
 
-            let activeDetailAssignmentId = null;
+        // ── 4. 자동 분해 템플릿 ───────────────────
+        const TEMPLATES = {
+            '레포트':   ['주제 확인','참고자료 찾기','핵심 자료 읽기','목차 구성','서론 작성','본론 작성','결론 작성','각주 및 참고문헌 정리','맞춤법 검토','최종 제출'],
+            '발표':     ['발표 주제 확인','자료 조사','발표 목차 작성','PPT 초안 제작','발표 대본 작성','발표 연습','최종 수정','제출 또는 발표 준비 완료'],
+            '시험 공부':['시험 범위 및 핵심 교수님 힌트 파악','학습 일정 계획 수립 및 교안/교재 수집','단원별 핵심 개념 요약 노트 정리','공식, 용어, 핵심 매커니즘 정독 및 암기','단원별 연습문제 및 과거 기출문제 풀이','틀린 문제 분석 및 오답노트 작성','시험 전날 전체 범위 총정리 및 마인드맵 복습'],
+            '코딩 과제':['요구사항 명세 분석 및 입출력 조건 설계','알고리즘 흐름 구상 및 핵심 아키텍처 스케치','로컬 개발 환경 설정 및 기초 보일러플레이트 작성','핵심 알고리즘 및 데이터 흐름 구현','버그 디버깅 및 예외 케이스 처리 보강','코드 가독성을 위한 리팩토링 및 주석 작성','테스트 케이스 검증 및 결과 보고서 작성 후 코드 제출'],
+            '기타':     ['과제 목표 분석 및 추진 일정 조율','필요한 준비물 및 리소스 수집','과제 초안 작성 및 1차 아이디어 구체화','중간 과정 보완 및 세부 파트 다듬기','작성 문서 정합성 및 최종 레이아웃 검토','출력 또는 최종 포맷 변환','최종 검수 후 과제 제출 완료'],
+        };
 
-            // -----------------------------------------
-            // 2. DASHBOARD INITIALIZATION
-            // -----------------------------------------
-            function initializeDashboard() {
-                // 시간대별 웰컴 메시지
-                const hours = new Date().getHours();
-                let greeting = '안녕하세요';
-                if (hours >= 5 && hours < 12) greeting = '좋은 아침입니다';
-                else if (hours >= 12 && hours < 18) greeting = '활기찬 오후입니다';
-                else greeting = '오늘도 수고 많으십니다';
-                welcomeMessage.textContent = `${greeting}, 학우님! 👋`;
-
-                renderDashboard();
-            }
-
-            // -----------------------------------------
-            // 3. DATE & D-DAY HELPERS
-            // -----------------------------------------
-            function calculateDaysRemaining(deadlineStr) {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const deadline = new Date(deadlineStr);
-                deadline.setHours(0, 0, 0, 0);
-                
-                const diffTime = deadline.getTime() - today.getTime();
-                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            }
-
-            function getDDayLabel(deadlineStr) {
-                const days = calculateDaysRemaining(deadlineStr);
-                if (days === 0) return 'D-Day';
-                if (days > 0) return `D-${days}`;
-                return `D+${Math.abs(days)}`;
-            }
-
-            function formatKoreanDate(dateStr) {
-                const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
-                const date = new Date(dateStr);
-                if (isNaN(date.getTime())) return dateStr;
-                const month = date.getMonth() + 1;
-                const day = date.getDate();
-                const dayName = daysOfWeek[date.getDay()];
-                return `${month}/${day}(${dayName})`;
-            }
-
-            // -----------------------------------------
-            // 4. TASK DECOMPOSITION ENGINE
-            // -----------------------------------------
-            const DECOMPOSITION_TEMPLATES = {
-                '레포트': [
-                    '주제 확인',
-                    '참고자료 찾기',
-                    '핵심 자료 읽기',
-                    '목차 구성',
-                    '서론 작성',
-                    '본론 작성',
-                    '결론 작성',
-                    '각주 및 참고문헌 정리',
-                    '맞춤법 검토',
-                    '최종 제출'
-                ],
-                '발표': [
-                    '발표 주제 확인',
-                    '자료 조사',
-                    '발표 목차 작성',
-                    'PPT 초안 제작',
-                    '발표 대본 작성',
-                    '발표 연습',
-                    '최종 수정',
-                    '제출 또는 발표 준비 완료'
-                ],
-                '시험 공부': [
-                    '시험 범위 및 핵심 교수님 힌트 파악',
-                    '학습 일정 계획 수립 및 교안/교재 수집',
-                    '단원별 핵심 개념 요약 노트 정리',
-                    '공식, 용어, 핵심 매커니즘 정독 및 암기',
-                    '단원별 연습문제 및 과거 기출문제 풀이',
-                    '틀린 문제 분석 및 오답노트 작성',
-                    '시험 전날 전체 범위 총정리 및 마인드맵 복습'
-                ],
-                '코딩 과제': [
-                    '요구사항 명세 분석 및 입출력 조건 설계',
-                    '알고리즘 흐름 구상 및 핵심 아키텍처 스케치',
-                    '로컬 개발 환경 설정 및 기초 보일러플레이트 작성',
-                    '핵심 알고리즘 및 데이터 흐름 구현',
-                    '버그 디버깅 및 예외 케이스 처리 보강',
-                    '코드 가독성을 위한 리팩토링 및 주석 작성',
-                    '테스트 케이스 검증 및 결과 보고서 작성 후 코드 제출'
-                ],
-                '기타': [
-                    '과제 목표 분석 및 추진 일정 조율',
-                    '필요한 준비물 및 리소스 수집',
-                    '과제 초안 작성 및 1차 아이디어 구체화',
-                    '중간 과정 보완 및 세부 파트 다듬기',
-                    '작성 문서 정합성 및 최종 레이아웃 검토',
-                    '출력 또는 최종 포맷 변환',
-                    '최종 검수 후 과제 제출 완료'
-                ]
-            };
-
-            function generateDecomposedSteps(type, deadlineStr) {
-                const templates = DECOMPOSITION_TEMPLATES[type] || DECOMPOSITION_TEMPLATES['기타'];
-                const stepCount = templates.length;
-                
-                // 날짜 균등 배분 계산
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const deadline = new Date(deadlineStr);
-                deadline.setHours(0, 0, 0, 0);
-                
-                const diffTime = deadline.getTime() - today.getTime();
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                return templates.map((text, index) => {
-                    let dueDateStr = deadlineStr; // 기본값은 마감일
-                    
-                    if (diffDays > 0) {
-                        // 오늘부터 마감일까지 단계별 균등 배분 (1부터 시작해 마지막 단계는 마감일과 일치하도록 설계)
-                        const fractionalDay = ((index + 1) / stepCount) * diffDays;
-                        const stepDate = new Date(today);
-                        stepDate.setDate(today.getDate() + Math.round(fractionalDay));
-                        dueDateStr = stepDate.toISOString().split('T')[0];
-                    }
-                    
-                    return {
-                        id: index + 1,
-                        text: text,
-                        done: false,
-                        dueDate: dueDateStr
-                    };
-                });
-            }
-
-            // -----------------------------------------
-            // 5. DASHBOARD RENDERING & OPERATIONS
-            // -----------------------------------------
-            function getPriorityWeight(priority) {
-                if (priority === '상') return 3;
-                if (priority === '중') return 2;
-                return 1;
-            }
-
-            function renderDashboard() {
-                // 모든 과제 데이터 사용 (비로그인 서비스)
-                const userAssignments = assignments;
-
-                // 5.1. 통계 요약 정보 계산
-                const totalCount = userAssignments.length;
-                const progressCount = userAssignments.filter(a => a.status === '진행중').length;
-                const completedCount = userAssignments.filter(a => a.status === '완료').length;
-                
-                let avgProgress = 0;
-                if (totalCount > 0) {
-                    const sumProgress = userAssignments.reduce((acc, a) => {
-                        const doneCount = a.steps.filter(s => s.done).length;
-                        const totalSteps = a.steps.length;
-                        return acc + (totalSteps > 0 ? (doneCount / totalSteps) * 100 : 0);
-                    }, 0);
-                    avgProgress = Math.round(sumProgress / totalCount);
+        function makeSteps(type, deadline) {
+            const tmpl = TEMPLATES[type] || TEMPLATES['기타'];
+            const n = tmpl.length;
+            const today = new Date(); today.setHours(0,0,0,0);
+            const dl = new Date(deadline); dl.setHours(0,0,0,0);
+            const diff = Math.ceil((dl - today) / 86400000);
+            return tmpl.map((text, i) => {
+                let due = deadline;
+                if (diff > 0) {
+                    const d = new Date(today);
+                    d.setDate(today.getDate() + Math.round(((i+1)/n)*diff));
+                    due = d.toISOString().split('T')[0];
                 }
+                return { id: i+1, text, done: false, dueDate: due };
+            });
+        }
 
-                statTotal.textContent = totalCount;
-                statProgress.textContent = progressCount;
-                statCompleted.textContent = completedCount;
-                statAvgProgress.textContent = `${avgProgress}%`;
+        // ── 5. 렌더링 ─────────────────────────────
+        function priWeight(p) { return p==='상'?3:p==='중'?2:1; }
 
-                // 5.2. '오늘 해야 할 작업' (추천 완료일이 오늘 자정 이하이고 미완료인 것)
-                renderTodayTasks(userAssignments);
-
-                // 5.3. '마감 임박 과제' (진행 중이면서 D-3 이내)
-                renderUrgentAssignments(userAssignments);
-
-                // 5.4. '전체 과제 목록' (필터링 및 정렬 적용)
-                renderAllAssignments(userAssignments);
-                
-                // 아이콘 리로드
-                lucide.createIcons();
+        function render() {
+            const all = assignments;
+            const total = all.length;
+            const prog  = all.filter(a=>a.status==='진행중').length;
+            const done  = all.filter(a=>a.status==='완료').length;
+            let avg = 0;
+            if (total) {
+                avg = Math.round(all.reduce((s,a)=>{
+                    const d=a.steps.filter(s=>s.done).length, t=a.steps.length;
+                    return s+(t>0?(d/t)*100:0);
+                },0)/total);
             }
+            statTotal.textContent       = total;
+            statProgress.textContent    = prog;
+            statCompleted.textContent   = done;
+            statAvgProgress.textContent = avg+'%';
+            renderToday(all);
+            renderUrgent(all);
+            renderAll(all);
+        }
 
-            // 5.2. 오늘 해야 할 작업 렌더링
-            function renderTodayTasks(userAssignments) {
-                const todayStr = new Date().toISOString().split('T')[0];
-                let todayTasks = [];
-
-                userAssignments.forEach(assignment => {
-                    if (assignment.status === '진행중') {
-                        assignment.steps.forEach(step => {
-                            // 추천 마감일이 오늘 이전이거나 오늘인 미완료 태스크
-                            if (step.dueDate <= todayStr && !step.done) {
-                                todayTasks.push({
-                                    assignmentId: assignment.id,
-                                    assignmentTitle: assignment.title,
-                                    assignmentSubject: assignment.subject,
-                                    stepId: step.id,
-                                    text: step.text,
-                                    dueDate: step.dueDate
-                                });
-                            }
-                        });
-                    }
+        /* ── 오늘 할 일 ── */
+        function renderToday(all) {
+            const td = todayStr();
+            const tasks = [];
+            all.forEach(a => {
+                if (a.status !== '진행중') return;
+                a.steps.forEach(s => {
+                    if (!s.done && s.dueDate <= td)
+                        tasks.push({aId:a.id,aTitle:a.title,aSubj:a.subject,sId:s.id,text:s.text,due:s.dueDate});
                 });
-
-                todayTasksCount.textContent = `${todayTasks.length}개 남음`;
-
-                if (todayTasks.length === 0) {
-                    todayTasksList.innerHTML = `
-                        <div class="flex flex-col items-center justify-center h-full py-12 text-slate-500 text-sm">
-                            <div class="p-4 bg-emerald-500/10 rounded-full text-emerald-400 mb-3 border border-emerald-500/15">
-                                <i data-lucide="clipboard-check" class="w-8 h-8"></i>
-                            </div>
-                            오늘 완료해야 할 세부 작업이 없습니다.
-                            <span class="text-xs text-slate-500 mt-1">대시보드 전체 목록에서 일정을 확인하세요.</span>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // 마감일이 이른 작업부터 정렬
-                todayTasks.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
-
-                todayTasksList.innerHTML = todayTasks.map(task => {
-                    const overdue = task.dueDate < todayStr;
-                    const dateLabel = overdue ? '기한 지남' : '오늘 마감';
-                    const badgeClass = overdue ? 'bg-red-500/15 text-red-400 border border-red-500/25' : 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/25';
-                    
-                    return `
-                        <div class="p-3.5 bg-slate-900/80 hover:bg-slate-900 rounded-xl border border-slate-800/80 flex items-start justify-between gap-3 group transition-all">
-                            <div class="flex items-start gap-3 flex-1 min-w-0">
-                                <input type="checkbox" 
-                                       class="today-step-checkbox custom-checkbox mt-1 shrink-0" 
-                                       data-assignment-id="${task.assignmentId}" 
-                                       data-step-id="${task.stepId}">
-                                <div class="min-w-0 flex-1 cursor-pointer open-detail-link" data-id="${task.assignmentId}">
-                                    <div class="flex items-center gap-1.5 flex-wrap">
-                                        <span class="text-[10px] font-bold px-1.5 py-0.5 bg-indigo-500/10 text-indigo-300 rounded border border-indigo-500/15 truncate max-w-[120px]">${task.assignmentSubject}</span>
-                                        <span class="text-[10px] font-medium text-slate-500 truncate max-w-[180px]">${task.assignmentTitle}</span>
-                                    </div>
-                                    <p class="text-slate-200 text-sm font-medium mt-1 truncate group-hover:text-indigo-300 transition-colors">${task.text}</p>
-                                </div>
-                            </div>
-                            <div class="flex flex-col items-end justify-between h-full gap-2 shrink-0">
-                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${badgeClass}">${dateLabel} (${formatKoreanDate(task.dueDate)})</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                // 체크박스 토글 이벤트 바인딩
-                document.querySelectorAll('.today-step-checkbox').forEach(chk => {
-                    chk.addEventListener('change', (e) => {
-                        const aId = e.target.getAttribute('data-assignment-id');
-                        const sId = parseInt(e.target.getAttribute('data-step-id'));
-                        toggleStepStatus(aId, sId, e.target.checked);
-                    });
-                });
-
-                // 타이틀 클릭 시 상세 모달 오픈 이벤트 바인딩
-                document.querySelectorAll('.open-detail-link').forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        const id = e.currentTarget.getAttribute('data-id');
-                        openDetailsModal(id);
-                    });
-                });
+            });
+            todayTasksCount.textContent = `${tasks.length}개 남음`;
+            if (!tasks.length) {
+                todayTasksList.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-8 text-slate-500 text-sm text-center">
+                    <div class="p-4 bg-emerald-500/10 rounded-full text-emerald-400 mb-3 border border-emerald-500/15">
+                        <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </div>오늘 완료해야 할 세부 작업이 없습니다.</div>`;
+                return;
             }
-
-            // 5.3. 마감 임박 과제 렌더링 (D-3 이내, 미완료 과제)
-            function renderUrgentAssignments(userAssignments) {
-                const urgentList = userAssignments.filter(a => {
-                    if (a.status !== '진행중') return false;
-                    const remaining = calculateDaysRemaining(a.deadline);
-                    return remaining >= 0 && remaining <= 3;
-                });
-
-                // 남은 일수 빠른 순으로 정렬
-                urgentList.sort((a, b) => calculateDaysRemaining(a.deadline) - calculateDaysRemaining(b.deadline));
-
-                if (urgentList.length === 0) {
-                    urgentAssignmentsList.innerHTML = `
-                        <div class="w-full p-6 glass-card rounded-xl border border-glassBorder text-slate-500 text-sm flex items-center justify-center gap-2">
-                            <i data-lucide="sparkles" class="w-5 h-5 text-indigo-400"></i>
-                            마감 임박한 과제가 없습니다.
-                        </div>
-                    `;
-                    return;
-                }
-
-                urgentAssignmentsList.innerHTML = urgentList.map(a => {
-                    const daysLeft = calculateDaysRemaining(a.deadline);
-                    const ddayLabel = getDDayLabel(a.deadline);
-                    
-                    const cardClass = daysLeft === 0 ? 'urgent-card-dday border-red-500/60' : 'urgent-card-near border-amber-500/50';
-                    const badgeClass = daysLeft === 0 ? 'bg-red-500 text-white shadow-lg shadow-red-500/35' : 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/25';
-                    
-                    const doneSteps = a.steps.filter(s => s.done).length;
-                    const totalSteps = a.steps.length;
-                    const progressPercent = totalSteps > 0 ? Math.round((doneSteps / totalSteps) * 100) : 0;
-
-                    return `
-                        <div class="glass-card min-w-[280px] sm:min-w-[320px] max-w-[350px] p-5 rounded-2xl border flex flex-col justify-between cursor-pointer hover:scale-[1.02] active:scale-[0.99] transition-all group shrink-0 ${cardClass}" data-id="${a.id}">
-                            <div>
-                                <div class="flex items-center justify-between gap-2 mb-3">
-                                    <span class="text-xs font-semibold px-2 py-0.5 bg-slate-900/80 rounded-md border border-slate-700/50 truncate max-w-[120px]">${a.subject}</span>
-                                    <span class="text-xs font-black tracking-wider uppercase px-2 py-0.5 rounded-full ${badgeClass}">${ddayLabel}</span>
-                                </div>
-                                <h4 class="text-base font-bold text-slate-100 group-hover:text-indigo-300 transition-colors line-clamp-1 mb-1">${a.title}</h4>
-                                <p class="text-slate-400 text-xs line-clamp-1">${a.description || '과제 설명이 없습니다.'}</p>
+            tasks.sort((a,b)=>a.due.localeCompare(b.due));
+            todayTasksList.innerHTML = tasks.map(t=>{
+                const ov = t.due < td;
+                const badge = ov ? 'background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.25);'
+                                  : 'background:rgba(234,179,8,.15);color:#facc15;border:1px solid rgba(234,179,8,.25);';
+                return `<div class="p-3.5 rounded-xl border border-slate-800/80 flex items-start justify-between gap-3 group transition-all hover:border-indigo-500/30" style="background:rgba(15,23,42,.8);">
+                    <div class="flex items-start gap-3 flex-1 min-w-0">
+                        <input type="checkbox" class="today-step-checkbox custom-checkbox mt-1" data-aid="${t.aId}" data-sid="${t.sId}">
+                        <div class="min-w-0 flex-1 cursor-pointer open-detail-link" data-id="${t.aId}">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 bg-indigo-500/10 text-indigo-300 rounded border border-indigo-500/15 truncate max-w-[110px]">${t.aSubj}</span>
+                                <span class="text-[10px] text-slate-500 truncate max-w-[160px]">${t.aTitle}</span>
                             </div>
-                            
-                            <div class="mt-5 space-y-2">
-                                <div class="flex items-center justify-between text-xs text-slate-400">
-                                    <span>진행률 (${doneSteps}/${totalSteps})</span>
-                                    <span class="font-bold text-indigo-400 font-outfit">${progressPercent}%</span>
-                                </div>
-                                <div class="w-full bg-slate-950/60 rounded-full h-2 overflow-hidden border border-slate-800">
-                                    <div class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full transition-all duration-300" style="width: ${progressPercent}%"></div>
-                                </div>
-                            </div>
+                            <p class="text-slate-200 text-sm font-medium mt-1 truncate group-hover:text-indigo-300 transition-colors">${t.text}</p>
                         </div>
-                    `;
-                }).join('');
+                    </div>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0" style="${badge}">${ov?'기한 지남':'오늘 마감'} (${fmtDate(t.due)})</span>
+                </div>`;
+            }).join('');
 
-                // 카드 클릭 이벤트 바인딩
-                urgentAssignmentsList.querySelectorAll('[data-id]').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const id = card.getAttribute('data-id');
-                        openDetailsModal(id);
-                    });
+            todayTasksList.querySelectorAll('.today-step-checkbox').forEach(chk=>{
+                chk.addEventListener('change',e=>{
+                    toggleStep(e.target.dataset.aid, +e.target.dataset.sid, e.target.checked);
                 });
+            });
+            todayTasksList.querySelectorAll('.open-detail-link').forEach(el=>{
+                el.addEventListener('click',e=>openDetails(e.currentTarget.dataset.id));
+            });
+        }
+
+        /* ── 마감 임박 ── */
+        function renderUrgent(all) {
+            const list = all.filter(a=>a.status==='진행중'&&daysLeft(a.deadline)>=0&&daysLeft(a.deadline)<=3)
+                            .sort((a,b)=>daysLeft(a.deadline)-daysLeft(b.deadline));
+            if (!list.length) {
+                urgentList.innerHTML = `<div class="w-full p-6 glass-card rounded-xl text-slate-500 text-sm flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    마감 임박한 과제가 없습니다.</div>`;
+                return;
             }
-
-            // 5.4. 전체 과제 목록 렌더링
-            function renderAllAssignments(userAssignments) {
-                // 필터링 적용
-                const filterVal = filterStatus.value;
-                let filtered = userAssignments.filter(a => {
-                    if (filterVal === 'all') return true;
-                    if (filterVal === 'in-progress') return a.status === '진행중';
-                    if (filterVal === 'completed') return a.status === '완료';
-                    return true;
-                });
-
-                // 정렬 적용
-                const sortVal = sortBy.value;
-                filtered.sort((a, b) => {
-                    if (sortVal === 'deadline') {
-                        return a.deadline.localeCompare(b.deadline);
-                    }
-                    if (sortVal === 'priority') {
-                        return getPriorityWeight(b.priority) - getPriorityWeight(a.priority);
-                    }
-                    if (sortVal === 'title') {
-                        return a.title.localeCompare(b.title);
-                    }
-                    return 0;
-                });
-
-                if (filtered.length === 0) {
-                    assignmentsGrid.innerHTML = `
-                        <div class="col-span-full text-center py-16 glass-card rounded-xl border border-glassBorder text-slate-500">
-                            <div class="w-12 h-12 bg-slate-900 border border-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i data-lucide="folder-search" class="w-6 h-6 text-slate-500"></i>
-                            </div>
-                            필터 조건에 부합하는 과제가 없습니다.
+            urgentList.innerHTML = list.map(a=>{
+                const dl=daysLeft(a.deadline), lbl=ddayLabel(a.deadline);
+                const cardCls = dl===0?'urgent-card-dday border-red-500/60':'urgent-card-near border-amber-500/50';
+                const badge   = dl===0?'background:#ef4444;color:#fff;':'background:#f59e0b;color:#0c0a09;';
+                const dSteps  = a.steps.filter(s=>s.done).length, tSteps=a.steps.length;
+                const pct     = tSteps?Math.round(dSteps/tSteps*100):0;
+                return `<div class="glass-card min-w-[280px] sm:min-w-[300px] max-w-[340px] p-5 rounded-2xl border flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition-all group shrink-0 ${cardCls}" data-id="${a.id}">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-md border border-slate-700/50 truncate max-w-[120px]" style="background:rgba(15,23,42,.8);">${a.subject}</span>
+                            <span class="text-xs font-black tracking-wider uppercase px-2 py-0.5 rounded-full" style="${badge}">${lbl}</span>
                         </div>
-                    `;
-                    return;
-                }
-
-                assignmentsGrid.innerHTML = filtered.map(a => {
-                    const doneSteps = a.steps.filter(s => s.done).length;
-                    const totalSteps = a.steps.length;
-                    const progressPercent = totalSteps > 0 ? Math.round((doneSteps / totalSteps) * 100) : 0;
-                    const ddayLabel = getDDayLabel(a.deadline);
-                    const isCompleted = a.status === '완료';
-
-                    // D-Day 중요도 색상 배지 지정
-                    let priorityBadgeColor = 'bg-slate-850 text-slate-400 border-slate-800';
-                    if (a.priority === '상') priorityBadgeColor = 'bg-rose-500/10 text-rose-400 border-rose-500/15';
-                    else if (a.priority === '중') priorityBadgeColor = 'bg-amber-500/10 text-amber-400 border-amber-500/15';
-
-                    let ddayBadgeColor = 'bg-slate-900/90 text-slate-400 border-slate-700';
-                    const daysLeft = calculateDaysRemaining(a.deadline);
-                    if (daysLeft >= 0 && daysLeft <= 3 && !isCompleted) {
-                        ddayBadgeColor = daysLeft === 0 ? 'bg-red-500 text-white font-bold' : 'bg-amber-500 text-slate-950 font-bold';
-                    }
-
-                    return `
-                        <div class="glass-card p-5 rounded-2xl border border-glassBorder flex flex-col justify-between cursor-pointer hover:-translate-y-1 active:translate-y-0.5 transition-all group" data-id="${a.id}">
-                            <div>
-                                <!-- 탑 메타 -->
-                                <div class="flex items-center justify-between gap-2 mb-3">
-                                    <span class="text-xs font-semibold px-2 py-0.5 bg-indigo-500/10 text-indigo-300 rounded border border-indigo-500/15 truncate max-w-[120px]">${a.subject}</span>
-                                    <span class="text-[10px] font-medium px-2 py-0.5 rounded border ${priorityBadgeColor}">중요도: ${a.priority}</span>
-                                </div>
-                                
-                                <!-- 타이틀 및 설명 -->
-                                <h4 class="text-base font-bold text-slate-100 group-hover:text-indigo-300 transition-colors line-clamp-1 mb-1">${a.title}</h4>
-                                <p class="text-slate-400 text-xs line-clamp-1 mb-4">${a.description || '과제 설명이 없습니다.'}</p>
-                            </div>
-
-                            <!-- 바텀 정보 -->
-                            <div class="space-y-4 pt-3 border-t border-slate-900">
-                                <div class="flex items-center justify-between text-xs">
-                                    <div class="flex items-center gap-1 text-slate-450">
-                                        <i data-lucide="tag" class="w-3.5 h-3.5 text-indigo-400"></i>
-                                        <span>${a.type}</span>
-                                    </div>
-                                    <span class="text-[11px] px-2 py-0.5 rounded border border-slate-800 ${ddayBadgeColor}">${ddayLabel} (${formatKoreanDate(a.deadline)})</span>
-                                </div>
-
-                                <!-- 프로그레스 -->
-                                <div class="space-y-2">
-                                    <div class="flex items-center justify-between text-xs text-slate-400">
-                                        <span>진행률 (${doneSteps}/${totalSteps})</span>
-                                        <span class="font-bold text-indigo-400 font-outfit">${progressPercent}%</span>
-                                    </div>
-                                    <div class="w-full bg-slate-950/60 rounded-full h-2 overflow-hidden border border-slate-900">
-                                        <div class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full transition-all duration-300" style="width: ${progressPercent}%"></div>
-                                    </div>
-                                </div>
-
-                                <!-- 상태 플래그 배지 -->
-                                <div class="flex justify-end">
-                                    ${isCompleted 
-                                        ? `<span class="text-[10px] font-bold inline-flex items-center gap-1 text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/15"><i data-lucide="check-circle2" class="w-3 h-3"></i> 완료됨</span>` 
-                                        : `<span class="text-[10px] font-bold inline-flex items-center gap-1 text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/15"><i data-lucide="clock" class="w-3 h-3"></i> 진행 중</span>`}
-                                </div>
-                            </div>
+                        <h4 class="text-base font-bold text-slate-100 group-hover:text-indigo-300 transition-colors line-clamp-1 mb-1">${a.title}</h4>
+                        <p class="text-slate-400 text-xs line-clamp-1">${a.description||'과제 설명 없음'}</p>
+                    </div>
+                    <div class="mt-5 space-y-2">
+                        <div class="flex justify-between text-xs text-slate-400"><span>진행률 (${dSteps}/${tSteps})</span><span class="font-bold text-indigo-400">${pct}%</span></div>
+                        <div class="w-full rounded-full h-2 overflow-hidden border border-slate-800" style="background:rgba(2,6,23,.6);">
+                            <div class="h-full transition-all duration-300" style="width:${pct}%;background:linear-gradient(to right,#6366f1,#10b981);"></div>
                         </div>
-                    `;
-                }).join('');
+                    </div>
+                </div>`;
+            }).join('');
+            urgentList.querySelectorAll('[data-id]').forEach(c=>c.addEventListener('click',()=>openDetails(c.dataset.id)));
+        }
 
-                // 카드 클릭 이벤트 바인딩
-                assignmentsGrid.querySelectorAll('[data-id]').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const id = card.getAttribute('data-id');
-                        openDetailsModal(id);
-                    });
-                });
+        /* ── 전체 목록 ── */
+        function renderAll(all) {
+            const fv = filterStatus.value;
+            let list = all.filter(a=>fv==='all'?true:fv==='in-progress'?a.status==='진행중':a.status==='완료');
+            const sv = sortBy.value;
+            list.sort((a,b)=>sv==='deadline'?a.deadline.localeCompare(b.deadline):sv==='priority'?priWeight(b.priority)-priWeight(a.priority):a.title.localeCompare(b.title));
+            if (!list.length) {
+                assignmentsGrid.innerHTML = `<div class="col-span-full text-center py-16 glass-card rounded-xl text-slate-500">
+                    <svg class="w-10 h-10 mx-auto mb-3 opacity-30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    필터 조건에 부합하는 과제가 없습니다.</div>`;
+                return;
             }
+            assignmentsGrid.innerHTML = list.map(a=>{
+                const dS=a.steps.filter(s=>s.done).length,tS=a.steps.length,pct=tS?Math.round(dS/tS*100):0;
+                const lbl=ddayLabel(a.deadline),done=a.status==='완료';
+                const dl=daysLeft(a.deadline);
+                let priBadge='background:rgba(30,41,59,.5);color:#94a3b8;border:1px solid rgba(148,163,184,.15);';
+                if(a.priority==='상') priBadge='background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.15);';
+                else if(a.priority==='중') priBadge='background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.15);';
+                let ddBadge='background:rgba(15,23,42,.9);color:#94a3b8;border:1px solid rgba(100,116,139,.3);';
+                if(!done&&dl>=0&&dl<=3) ddBadge=dl===0?'background:#ef4444;color:#fff;font-weight:700;':'background:#f59e0b;color:#0c0a09;font-weight:700;';
+                const statusBadge = done
+                    ? `<span class="text-[10px] font-bold inline-flex items-center gap-1 text-emerald-400 px-2 py-0.5 rounded border" style="background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.2);">✓ 완료됨</span>`
+                    : `<span class="text-[10px] font-bold inline-flex items-center gap-1 text-indigo-400 px-2 py-0.5 rounded border" style="background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.2);">⏱ 진행 중</span>`;
+                return `<div class="glass-card p-5 rounded-2xl flex flex-col justify-between cursor-pointer hover:-translate-y-1 transition-all group" data-id="${a.id}">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-semibold px-2 py-0.5 bg-indigo-500/10 text-indigo-300 rounded border border-indigo-500/15 truncate max-w-[120px]">${a.subject}</span>
+                            <span class="text-[10px] font-medium px-2 py-0.5 rounded" style="${priBadge}">중요도: ${a.priority}</span>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-100 group-hover:text-indigo-300 transition-colors line-clamp-1 mb-1">${a.title}</h4>
+                        <p class="text-slate-400 text-xs line-clamp-1 mb-4">${a.description||'과제 설명 없음'}</p>
+                    </div>
+                    <div class="space-y-3 pt-3 border-t border-slate-800/60">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400">${a.type}</span>
+                            <span class="text-[11px] px-2 py-0.5 rounded" style="${ddBadge}">${lbl} (${fmtDate(a.deadline)})</span>
+                        </div>
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs text-slate-400"><span>진행률 (${dS}/${tS})</span><span class="font-bold text-indigo-400">${pct}%</span></div>
+                            <div class="w-full rounded-full h-2 overflow-hidden border border-slate-800" style="background:rgba(2,6,23,.6);">
+                                <div class="h-full transition-all duration-300" style="width:${pct}%;background:linear-gradient(to right,#6366f1,#10b981);"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">${statusBadge}</div>
+                    </div>
+                </div>`;
+            }).join('');
+            assignmentsGrid.querySelectorAll('[data-id]').forEach(c=>c.addEventListener('click',()=>openDetails(c.dataset.id)));
+        }
 
-            // 세부 단계 상태 변경 로직
-            function toggleStepStatus(assignmentId, stepId, done) {
-                const assignment = assignments.find(a => a.id === assignmentId);
-                if (assignment) {
-                    const step = assignment.steps.find(s => s.id === stepId);
-                    if (step) {
-                        step.done = done;
-                        
-                        // 진행도 갱신 및 과제 상태 업데이트
-                        const doneCount = assignment.steps.filter(s => s.done).length;
-                        const totalSteps = assignment.steps.length;
-                        
-                        if (doneCount === totalSteps) {
-                            assignment.status = '완료';
+        /* ── 체크 토글 ── */
+        function toggleStep(aId, sId, done) {
+            const a = assignments.find(x=>x.id===aId);
+            if(!a) return;
+            const s = a.steps.find(x=>x.id===sId);
+            if(!s) return;
+            s.done = done;
+            a.status = a.steps.every(x=>x.done)?'완료':'진행중';
+            save();
+            render();
+            if(detailsModal.classList.contains('modal-active')&&activeId===aId) fillDetails(a);
+        }
+
+        // ── 6. 추가/수정 모달 ─────────────────────
+        function openAddModal() {
+            modalTitle.innerHTML = `<svg class="w-5 h-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> 새 과제 추가`;
+            assignmentForm.reset();
+            formId.value = '';
+            const td = todayStr();
+            formDeadline.value = td;
+            formDeadline.min   = td;
+            showModal(assignmentModal);
+        }
+        function openEditModal(a) {
+            modalTitle.innerHTML = `<svg class="w-5 h-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> 과제 정보 수정`;
+            formId.value          = a.id;
+            formSubject.value     = a.subject;
+            formType.value        = a.type;
+            formTitle.value       = a.title;
+            formDeadline.value    = a.deadline;
+            formDeadline.min      = todayStr();
+            formHours.value       = a.hoursNeeded;
+            formPriority.value    = a.priority;
+            formDescription.value = a.description||'';
+            closeModal(detailsModal);
+            showModal(assignmentModal);
+        }
+
+        openAddBtn.addEventListener('click', openAddModal);
+        document.querySelectorAll('.close-modal-btn').forEach(b=>b.addEventListener('click',()=>closeModal(assignmentModal)));
+
+        assignmentForm.addEventListener('submit', e=>{
+            e.preventDefault();
+            const id       = formId.value;
+            const subject  = formSubject.value.trim();
+            const type     = formType.value;
+            const title    = formTitle.value.trim();
+            const deadline = formDeadline.value;
+            const hours    = parseInt(formHours.value);
+            const priority = formPriority.value;
+            const desc     = formDescription.value.trim();
+
+            if (id) {
+                const a = assignments.find(x=>x.id===id);
+                if (a) {
+                    const typeChg = a.type!==type, dlChg = a.deadline!==deadline;
+                    a.subject=subject; a.title=title; a.hoursNeeded=hours; a.priority=priority; a.description=desc;
+                    if (typeChg||dlChg) {
+                        if (confirm('유형 또는 마감일이 바뀌었습니다. 세부 단계를 재생성할까요? (기존 체크 초기화)')) {
+                            a.type=type; a.deadline=deadline;
+                            a.steps=makeSteps(type,deadline); a.status='진행중';
                         } else {
-                            assignment.status = '진행중';
-                        }
-
-                        // 저장 및 렌더링
-                        localStorage.setItem('tb_assignments', JSON.stringify(assignments));
-                        renderDashboard();
-
-                        // 상세 모달이 열려 있다면 상세 모달도 갱신
-                        if (detailsModal.classList.contains('modal-active') && activeDetailAssignmentId === assignmentId) {
-                            updateDetailsModalContent(assignment);
+                            a.deadline=deadline;
+                            const n=a.steps.length, td2=new Date(); td2.setHours(0,0,0,0);
+                            const dl2=new Date(deadline); dl2.setHours(0,0,0,0);
+                            const diff=Math.ceil((dl2-td2)/86400000);
+                            a.steps.forEach((s,i)=>{
+                                if(diff>0){const d=new Date(td2);d.setDate(td2.getDate()+Math.round(((i+1)/n)*diff));s.dueDate=d.toISOString().split('T')[0];}
+                                else s.dueDate=deadline;
+                            });
                         }
                     }
                 }
-            }
-
-            // -----------------------------------------
-            // 6. ADD & EDIT MODAL OPERATIONS
-            // -----------------------------------------
-            function openAddModal() {
-                modalTitle.innerHTML = `<i data-lucide="clipboard-list" class="w-5 h-5 text-indigo-400"></i> 새 과제 추가`;
-                assignmentForm.reset();
-                formId.value = '';
-                
-                // 날짜 인풋 기본값으로 오늘 설정
-                const todayStr = new Date().toISOString().split('T')[0];
-                formDeadline.value = todayStr;
-                formDeadline.min = todayStr;
-
-                assignmentModal.classList.add('modal-active');
-                setTimeout(() => {
-                    assignmentModal.classList.add('modal-animate-in');
-                }, 50);
-                lucide.createIcons();
-            }
-
-            function openEditModal(assignment) {
-                modalTitle.innerHTML = `<i data-lucide="edit" class="w-5 h-5 text-indigo-400"></i> 과제 정보 수정`;
-                formId.value = assignment.id;
-                formSubject.value = assignment.subject;
-                formType.value = assignment.type;
-                formTitle.value = assignment.title;
-                formDeadline.value = assignment.deadline;
-                formDeadline.min = new Date().toISOString().split('T')[0];
-                formHours.value = assignment.hoursNeeded;
-                formPriority.value = assignment.priority;
-                formDescription.value = assignment.description || '';
-
-                // 상세 모달을 닫고 수정 모달 오픈
-                closeDetailsModal();
-                
-                assignmentModal.classList.add('modal-active');
-                setTimeout(() => {
-                    assignmentModal.classList.add('modal-animate-in');
-                }, 50);
-                lucide.createIcons();
-            }
-
-            function closeModal() {
-                assignmentModal.classList.remove('modal-animate-in');
-                setTimeout(() => {
-                    assignmentModal.classList.remove('modal-active');
-                }, 300);
-            }
-
-            // Event Listeners
-            openAddModalBtn.addEventListener('click', openAddModal);
-            closeModalBtns.forEach(btn => btn.addEventListener('click', closeModal));
-
-            // 수정 및 신규 등록 처리 폼 전송
-            assignmentForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const idVal = formId.value;
-                const subject = formSubject.value.trim();
-                const type = formType.value;
-                const title = formTitle.value.trim();
-                const deadline = formDeadline.value;
-                const hours = parseInt(formHours.value);
-                const priority = formPriority.value;
-                const description = formDescription.value.trim();
-
-                if (idVal) {
-                    // [수정 모드]
-                    const assignment = assignments.find(a => a.id === idVal);
-                    if (assignment) {
-                        // 타입이나 마감일이 바뀐 경우 세부 작업 재생성
-                        const isTypeChanged = assignment.type !== type;
-                        const isDeadlineChanged = assignment.deadline !== deadline;
-
-                        assignment.subject = subject;
-                        assignment.title = title;
-                        assignment.hoursNeeded = hours;
-                        assignment.priority = priority;
-                        assignment.description = description;
-
-                        if (isTypeChanged || isDeadlineChanged) {
-                            if (confirm('과제 유형 또는 마감일이 변경되었습니다. 세부 단계 일정과 완료 상태를 재생성하시겠습니까? (기존 체크 데이터 삭제)')) {
-                                assignment.type = type;
-                                assignment.deadline = deadline;
-                                assignment.steps = generateDecomposedSteps(type, deadline);
-                                assignment.status = '진행중';
-                            } else {
-                                // 날짜 배분만 다시 하고 텍스트/상태 보존
-                                assignment.deadline = deadline;
-                                const stepCount = assignment.steps.length;
-                                const today = new Date();
-                                today.setHours(0,0,0,0);
-                                const targetDeadline = new Date(deadline);
-                                targetDeadline.setHours(0,0,0,0);
-                                const diffDays = Math.ceil((targetDeadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-                                assignment.steps.forEach((step, index) => {
-                                    if (diffDays > 0) {
-                                        const fractionalDay = ((index + 1) / stepCount) * diffDays;
-                                        const stepDate = new Date(today);
-                                        stepDate.setDate(today.getDate() + Math.round(fractionalDay));
-                                        step.dueDate = stepDate.toISOString().split('T')[0];
-                                    } else {
-                                        step.dueDate = deadline;
-                                    }
-                                });
-                            }
-                        }
-                    }
-                } else {
-                    // [신규 등록 모드]
-                    const newAssignment = {
-                        id: 'asg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                        subject: subject,
-                        title: title,
-                        type: type,
-                        deadline: deadline,
-                        hoursNeeded: hours,
-                        priority: priority,
-                        description: description,
-                        status: '진행중',
-                        steps: generateDecomposedSteps(type, deadline)
-                    };
-                    assignments.push(newAssignment);
-                }
-
-                // 저장 및 업데이트
-                localStorage.setItem('tb_assignments', JSON.stringify(assignments));
-                closeModal();
-                renderDashboard();
-            });
-
-            // -----------------------------------------
-            // 7. ASSIGNMENT DETAILS MODAL OPERATIONS
-            // -----------------------------------------
-            function openDetailsModal(id) {
-                const assignment = assignments.find(a => a.id === id);
-                if (!assignment) return;
-
-                activeDetailAssignmentId = id;
-                updateDetailsModalContent(assignment);
-
-                detailsModal.classList.add('modal-active');
-                setTimeout(() => {
-                    detailsModal.classList.add('modal-animate-in');
-                }, 50);
-                lucide.createIcons();
-            }
-
-            function updateDetailsModalContent(assignment) {
-                const todayStr = new Date().toISOString().split('T')[0];
-                const daysLeft = calculateDaysRemaining(assignment.deadline);
-                const ddayLabel = getDDayLabel(assignment.deadline);
-
-                detailSubject.textContent = assignment.subject;
-                detailTitle.textContent = assignment.title;
-                detailDeadline.textContent = assignment.deadline;
-                detailDday.textContent = ddayLabel;
-                detailType.textContent = assignment.type;
-                detailPriority.textContent = `중요도 ${assignment.priority}`;
-                detailHours.textContent = `${assignment.hoursNeeded}시간 예상`;
-                detailDescription.textContent = assignment.description || '등록된 상세 설명이 없습니다.';
-
-                // D-Day 헤더 배지 색상 지정
-                if (daysLeft >= 0 && daysLeft <= 3 && assignment.status !== '완료') {
-                    detailDday.className = `font-bold text-sm px-2.5 py-0.5 rounded-full ${daysLeft === 0 ? 'bg-red-500 text-white animate-pulse' : 'bg-amber-500 text-slate-950'}`;
-                } else {
-                    detailDday.className = 'font-bold text-sm px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-350 border border-slate-700';
-                }
-
-                // 진행률 게이지 바 설정
-                const doneSteps = assignment.steps.filter(s => s.done).length;
-                const totalSteps = assignment.steps.length;
-                const progressPercent = totalSteps > 0 ? Math.round((doneSteps / totalSteps) * 100) : 0;
-                
-                detailProgressPercent.textContent = `${progressPercent}%`;
-                detailProgressBar.style.width = `${progressPercent}%`;
-
-                // 세부 태스크 체크리스트 목록 렌더링
-                detailStepsList.innerHTML = assignment.steps.map(step => {
-                    const isDone = step.done;
-                    const isOverdue = step.dueDate < todayStr && !isDone;
-                    
-                    let dateBadgeClass = 'bg-slate-905 text-slate-450 border border-slate-800/80';
-                    if (isOverdue) dateBadgeClass = 'bg-red-500/10 text-red-400 border border-red-500/20';
-                    else if (step.dueDate === todayStr && !isDone) dateBadgeClass = 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
-
-                    return `
-                        <label class="flex items-center justify-between p-3 bg-slate-950/20 hover:bg-slate-950/50 border border-slate-900 rounded-xl cursor-pointer group transition-all">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <input type="checkbox" 
-                                       class="detail-step-checkbox custom-checkbox shrink-0" 
-                                       data-step-id="${step.id}" 
-                                       ${isDone ? 'checked' : ''}>
-                                <span class="text-sm font-medium transition-all ${isDone ? 'todo-checked-text' : 'text-slate-200 group-hover:text-slate-100'}">${step.text}</span>
-                            </div>
-                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${dateBadgeClass}">
-                                ${isOverdue ? '기한 지남 - ' : ''}${formatKoreanDate(step.dueDate)}까지
-                            </span>
-                        </label>
-                    `;
-                }).join('');
-
-                // 체크박스 클릭 이벤트 바인딩
-                document.querySelectorAll('.detail-step-checkbox').forEach(chk => {
-                    chk.addEventListener('change', (e) => {
-                        const sId = parseInt(e.target.getAttribute('data-step-id'));
-                        toggleStepStatus(assignment.id, sId, e.target.checked);
-                    });
+            } else {
+                assignments.push({
+                    id:'asg_'+Date.now()+'_'+Math.random().toString(36).substr(2,9),
+                    subject, title, type, deadline, hoursNeeded:hours, priority, description:desc,
+                    status:'진행중', steps:makeSteps(type,deadline)
                 });
             }
+            save(); closeModal(assignmentModal); render();
+        });
 
-            function closeDetailsModal() {
-                detailsModal.classList.remove('modal-animate-in');
-                setTimeout(() => {
-                    detailsModal.classList.remove('modal-active');
-                    activeDetailAssignmentId = null;
-                }, 300);
+        // ── 7. 상세 모달 ──────────────────────────
+        function openDetails(id) {
+            const a = assignments.find(x=>x.id===id);
+            if (!a) return;
+            activeId = id;
+            fillDetails(a);
+            showModal(detailsModal);
+        }
+
+        function fillDetails(a) {
+            const td = todayStr(), dl = daysLeft(a.deadline), lbl = ddayLabel(a.deadline);
+            detailSubject.textContent     = a.subject;
+            detailTitle.textContent       = a.title;
+            detailDeadline.textContent    = a.deadline;
+            detailDday.textContent        = lbl;
+            detailType.textContent        = a.type;
+            detailPriority.textContent    = `중요도 ${a.priority}`;
+            detailHours.textContent       = `${a.hoursNeeded}시간 예상`;
+            detailDescription.textContent = a.description||'등록된 설명이 없습니다.';
+
+            if (dl>=0&&dl<=3&&a.status!=='완료') {
+                detailDday.style.cssText = dl===0
+                    ? 'background:#ef4444;color:#fff;padding:2px 10px;border-radius:999px;animation:pulse 2s infinite;'
+                    : 'background:#f59e0b;color:#0c0a09;padding:2px 10px;border-radius:999px;';
+            } else {
+                detailDday.style.cssText = 'background:rgba(30,41,59,.8);color:#94a3b8;border:1px solid rgba(100,116,139,.3);padding:2px 10px;border-radius:999px;';
             }
 
-            closeDetailsBtns.forEach(btn => btn.addEventListener('click', closeDetailsModal));
+            const dS=a.steps.filter(s=>s.done).length, tS=a.steps.length;
+            const pct=tS?Math.round(dS/tS*100):0;
+            detailProgressPct.textContent = pct+'%';
+            detailProgressBar.style.width = pct+'%';
 
-            // 과제 정보 수정 트리거
-            editAssignmentBtn.addEventListener('click', () => {
-                if (activeDetailAssignmentId) {
-                    const assignment = assignments.find(a => a.id === activeDetailAssignmentId);
-                    if (assignment) {
-                        openEditModal(assignment);
-                    }
-                }
+            detailStepsList.innerHTML = a.steps.map(s=>{
+                const ov=s.dueDate<td&&!s.done;
+                let bdg='background:rgba(30,41,59,.5);color:#64748b;border:1px solid rgba(100,116,139,.2);';
+                if(ov) bdg='background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);';
+                else if(s.dueDate===td&&!s.done) bdg='background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2);';
+                return `<label class="flex items-center justify-between p-3 hover:bg-slate-900/40 border border-slate-800/60 rounded-xl cursor-pointer group transition-all">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <input type="checkbox" class="detail-step-checkbox custom-checkbox" data-sid="${s.id}" ${s.done?'checked':''}>
+                        <span class="text-sm font-medium transition-all ${s.done?'todo-checked-text':'text-slate-200 group-hover:text-slate-100'}">${s.text}</span>
+                    </div>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ml-2" style="${bdg}">${ov?'기한 지남 · ':''}${fmtDate(s.dueDate)}까지</span>
+                </label>`;
+            }).join('');
+
+            detailStepsList.querySelectorAll('.detail-step-checkbox').forEach(chk=>{
+                chk.addEventListener('change',e=>toggleStep(a.id,+e.target.dataset.sid,e.target.checked));
             });
+        }
 
-            // 과제 완전히 삭제 처리
-            deleteAssignmentBtn.addEventListener('click', () => {
-                if (activeDetailAssignmentId) {
-                    if (confirm('이 과제를 정말로 완전히 삭제하시겠습니까? 관련 세부 일정도 함께 삭제됩니다.')) {
-                        assignments = assignments.filter(a => a.id !== activeDetailAssignmentId);
-                        localStorage.setItem('tb_assignments', JSON.stringify(assignments));
-                        closeDetailsModal();
-                        renderDashboard();
-                    }
-                }
-            });
+        document.querySelectorAll('.close-details-btn').forEach(b=>b.addEventListener('click',()=>closeModal(detailsModal)));
 
-            // -----------------------------------------
-            // 8. INTERACTIVE FILTER CHANGE LISTENERS
-            // -----------------------------------------
-            filterStatus.addEventListener('change', renderDashboard);
-            sortBy.addEventListener('change', renderDashboard);
-
-            // -----------------------------------------
-            // 9. APP INITIAL RUN
-            // -----------------------------------------
-            initializeDashboard();
+        editBtn.addEventListener('click',()=>{
+            if(!activeId) return;
+            const a=assignments.find(x=>x.id===activeId);
+            if(a) openEditModal(a);
         });
+        deleteBtn.addEventListener('click',()=>{
+            if(!activeId) return;
+            if(confirm('이 과제를 정말 삭제하시겠습니까? 세부 일정도 함께 삭제됩니다.')) {
+                assignments=assignments.filter(x=>x.id!==activeId);
+                save(); closeModal(detailsModal); render();
+            }
+        });
+
+        // ── 8. 필터 / 정렬 ───────────────────────
+        filterStatus.addEventListener('change', render);
+        sortBy.addEventListener('change', render);
+
+        // ── 9. 모달 유틸 ─────────────────────────
+        function showModal(el) {
+            el.classList.add('modal-active');
+            el.style.display = 'flex';
+            requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('modal-animate-in')));
+        }
+        function closeModal(el) {
+            el.classList.remove('modal-animate-in');
+            setTimeout(()=>{ el.classList.remove('modal-active'); el.style.display='none'; if(el===detailsModal) activeId=null; }, 300);
+        }
+
+        // ── 10. LocalStorage 저장 ─────────────────
+        function save() { localStorage.setItem('tb_assignments', JSON.stringify(assignments)); }
+
+        // ── 실행 ─────────────────────────────────
+        init();
+    });
     </script>
 </body>
 </html>
